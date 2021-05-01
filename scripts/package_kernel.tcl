@@ -37,7 +37,7 @@ ipx::associate_bus_interfaces -busif ddr_0 -clock ap_clk $core
 ipx::associate_bus_interfaces -busif ddr_1 -clock ap_clk $core
 ipx::associate_bus_interfaces -busif ddr_2 -clock ap_clk $core
 ipx::associate_bus_interfaces -busif ddr_3 -clock ap_clk $core
-ipx::associate_bus_interfaces -busif ocl_master -clock ap_clk $core
+ipx::associate_bus_interfaces -busif s_axi_control -clock ap_clk $core
 ipx::associate_bus_interfaces -busif pcie_dma -clock ap_clk $core
 
 ipx::infer_bus_interface ap_clk_2 xilinx.com:signal:clock_rtl:1.0 $core
@@ -65,7 +65,7 @@ set_property value 250000000 $clkbifparam
 set_property value_resolve_type immediate $clkbifparam
 
 # Add FireSim IP
-create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_ocl_master
+create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_s_axi_control
 set_property -dict [list \
     CONFIG.ADDR_WIDTH {25} \
     CONFIG.DATA_WIDTH {32} \
@@ -75,7 +75,7 @@ set_property -dict [list \
     CONFIG.RUSER_WIDTH {1} \
     CONFIG.WUSER_WIDTH {1} \
     CONFIG.BUSER_WIDTH {1} \
-] [get_ips axi_clock_converter_ocl_master]
+] [get_ips axi_clock_converter_s_axi_control]
 
 create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_pcie_dma
 set_property -dict [list \

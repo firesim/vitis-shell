@@ -7,51 +7,51 @@ module XRTShim (
     input          ap_clk_2,
     input          ap_rst_n_2,
 
-    output         ocl_master_awready,
-    input          ocl_master_awvalid,
-    input  [24:0]  ocl_master_awaddr,
-    input  [7:0]   ocl_master_awlen,
-    input  [2:0]   ocl_master_awsize,
-    input  [1:0]   ocl_master_awburst,
-    input          ocl_master_awlock,
-    input  [3:0]   ocl_master_awcache,
-    input  [2:0]   ocl_master_awprot,
-    input  [3:0]   ocl_master_awqos,
-    input  [3:0]   ocl_master_awregion,
-    input  [11:0]  ocl_master_awid,
-    input          ocl_master_awuser,
-    output         ocl_master_wready,
-    input          ocl_master_wvalid,
-    input  [31:0]  ocl_master_wdata,
-    input          ocl_master_wlast,
-    input  [11:0]  ocl_master_wid,
-    input  [3:0]   ocl_master_wstrb,
-    input          ocl_master_wuser,
-    input          ocl_master_bready,
-    output         ocl_master_bvalid,
-    output [1:0]   ocl_master_bresp,
-    output [11:0]  ocl_master_bid,
-    output         ocl_master_buser,
-    output         ocl_master_arready,
-    input          ocl_master_arvalid,
-    input  [24:0]  ocl_master_araddr,
-    input  [7:0]   ocl_master_arlen,
-    input  [2:0]   ocl_master_arsize,
-    input  [1:0]   ocl_master_arburst,
-    input          ocl_master_arlock,
-    input  [3:0]   ocl_master_arcache,
-    input  [2:0]   ocl_master_arprot,
-    input  [3:0]   ocl_master_arqos,
-    input  [3:0]   ocl_master_arregion,
-    input  [11:0]  ocl_master_arid,
-    input          ocl_master_aruser,
-    input          ocl_master_rready,
-    output         ocl_master_rvalid,
-    output [1:0]   ocl_master_rresp,
-    output [31:0]  ocl_master_rdata,
-    output         ocl_master_rlast,
-    output [11:0]  ocl_master_rid,
-    output         ocl_master_ruser,
+    output         s_axi_control_awready,
+    input          s_axi_control_awvalid,
+    input  [24:0]  s_axi_control_awaddr,
+    input  [7:0]   s_axi_control_awlen,
+    input  [2:0]   s_axi_control_awsize,
+    input  [1:0]   s_axi_control_awburst,
+    input          s_axi_control_awlock,
+    input  [3:0]   s_axi_control_awcache,
+    input  [2:0]   s_axi_control_awprot,
+    input  [3:0]   s_axi_control_awqos,
+    input  [3:0]   s_axi_control_awregion,
+    input  [11:0]  s_axi_control_awid,
+    input          s_axi_control_awuser,
+    output         s_axi_control_wready,
+    input          s_axi_control_wvalid,
+    input  [31:0]  s_axi_control_wdata,
+    input          s_axi_control_wlast,
+    input  [11:0]  s_axi_control_wid,
+    input  [3:0]   s_axi_control_wstrb,
+    input          s_axi_control_wuser,
+    input          s_axi_control_bready,
+    output         s_axi_control_bvalid,
+    output [1:0]   s_axi_control_bresp,
+    output [11:0]  s_axi_control_bid,
+    output         s_axi_control_buser,
+    output         s_axi_control_arready,
+    input          s_axi_control_arvalid,
+    input  [24:0]  s_axi_control_araddr,
+    input  [7:0]   s_axi_control_arlen,
+    input  [2:0]   s_axi_control_arsize,
+    input  [1:0]   s_axi_control_arburst,
+    input          s_axi_control_arlock,
+    input  [3:0]   s_axi_control_arcache,
+    input  [2:0]   s_axi_control_arprot,
+    input  [3:0]   s_axi_control_arqos,
+    input  [3:0]   s_axi_control_arregion,
+    input  [11:0]  s_axi_control_arid,
+    input          s_axi_control_aruser,
+    input          s_axi_control_rready,
+    output         s_axi_control_rvalid,
+    output [1:0]   s_axi_control_rresp,
+    output [31:0]  s_axi_control_rdata,
+    output         s_axi_control_rlast,
+    output [11:0]  s_axi_control_rid,
+    output         s_axi_control_ruser,
 
     output         pcie_dma_awready,
     input          pcie_dma_awvalid,
@@ -256,96 +256,96 @@ module XRTShim (
     // Clock Domain Crossings
     //-------------------------------------------------
 
-    wire         ocl_master_awready_sync;
-    wire         ocl_master_awvalid_sync;
-    wire [24:0]  ocl_master_awaddr_sync;
-    wire [7:0]   ocl_master_awlen_sync;
-    wire [2:0]   ocl_master_awsize_sync;
-    wire [1:0]   ocl_master_awburst_sync;
-    wire         ocl_master_awlock_sync;
-    wire [3:0]   ocl_master_awcache_sync;
-    wire [2:0]   ocl_master_awprot_sync;
-    wire [3:0]   ocl_master_awqos_sync;
-    wire [3:0]   ocl_master_awregion_sync;
-    wire [11:0]  ocl_master_awid_sync;
-    wire         ocl_master_awuser_sync;
-    wire         ocl_master_wready_sync;
-    wire         ocl_master_wvalid_sync;
-    wire [31:0]  ocl_master_wdata_sync;
-    wire         ocl_master_wlast_sync;
-    wire [11:0]  ocl_master_wid_sync;
-    wire [3:0]   ocl_master_wstrb_sync;
-    wire         ocl_master_wuser_sync;
-    wire         ocl_master_bready_sync;
-    wire         ocl_master_bvalid_sync;
-    wire [1:0]   ocl_master_bresp_sync;
-    wire [11:0]  ocl_master_bid_sync;
-    wire         ocl_master_buser_sync;
-    wire         ocl_master_arready_sync;
-    wire         ocl_master_arvalid_sync;
-    wire [24:0]  ocl_master_araddr_sync;
-    wire [7:0]   ocl_master_arlen_sync;
-    wire [2:0]   ocl_master_arsize_sync;
-    wire [1:0]   ocl_master_arburst_sync;
-    wire         ocl_master_arlock_sync;
-    wire [3:0]   ocl_master_arcache_sync;
-    wire [2:0]   ocl_master_arprot_sync;
-    wire [3:0]   ocl_master_arqos_sync;
-    wire [3:0]   ocl_master_arregion_sync;
-    wire [11:0]  ocl_master_arid_sync;
-    wire         ocl_master_aruser_sync;
-    wire         ocl_master_rready_sync;
-    wire         ocl_master_rvalid_sync;
-    wire [1:0]   ocl_master_rresp_sync;
-    wire [31:0]  ocl_master_rdata_sync;
-    wire         ocl_master_rlast_sync;
-    wire [11:0]  ocl_master_rid_sync;
-    wire         ocl_master_ruser_sync;
+    wire         s_axi_control_awready_sync;
+    wire         s_axi_control_awvalid_sync;
+    wire [24:0]  s_axi_control_awaddr_sync;
+    wire [7:0]   s_axi_control_awlen_sync;
+    wire [2:0]   s_axi_control_awsize_sync;
+    wire [1:0]   s_axi_control_awburst_sync;
+    wire         s_axi_control_awlock_sync;
+    wire [3:0]   s_axi_control_awcache_sync;
+    wire [2:0]   s_axi_control_awprot_sync;
+    wire [3:0]   s_axi_control_awqos_sync;
+    wire [3:0]   s_axi_control_awregion_sync;
+    wire [11:0]  s_axi_control_awid_sync;
+    wire         s_axi_control_awuser_sync;
+    wire         s_axi_control_wready_sync;
+    wire         s_axi_control_wvalid_sync;
+    wire [31:0]  s_axi_control_wdata_sync;
+    wire         s_axi_control_wlast_sync;
+    wire [11:0]  s_axi_control_wid_sync;
+    wire [3:0]   s_axi_control_wstrb_sync;
+    wire         s_axi_control_wuser_sync;
+    wire         s_axi_control_bready_sync;
+    wire         s_axi_control_bvalid_sync;
+    wire [1:0]   s_axi_control_bresp_sync;
+    wire [11:0]  s_axi_control_bid_sync;
+    wire         s_axi_control_buser_sync;
+    wire         s_axi_control_arready_sync;
+    wire         s_axi_control_arvalid_sync;
+    wire [24:0]  s_axi_control_araddr_sync;
+    wire [7:0]   s_axi_control_arlen_sync;
+    wire [2:0]   s_axi_control_arsize_sync;
+    wire [1:0]   s_axi_control_arburst_sync;
+    wire         s_axi_control_arlock_sync;
+    wire [3:0]   s_axi_control_arcache_sync;
+    wire [2:0]   s_axi_control_arprot_sync;
+    wire [3:0]   s_axi_control_arqos_sync;
+    wire [3:0]   s_axi_control_arregion_sync;
+    wire [11:0]  s_axi_control_arid_sync;
+    wire         s_axi_control_aruser_sync;
+    wire         s_axi_control_rready_sync;
+    wire         s_axi_control_rvalid_sync;
+    wire [1:0]   s_axi_control_rresp_sync;
+    wire [31:0]  s_axi_control_rdata_sync;
+    wire         s_axi_control_rlast_sync;
+    wire [11:0]  s_axi_control_rid_sync;
+    wire         s_axi_control_ruser_sync;
 
-    axi_clock_converter_ocl_master ocl_master_clock_convert (
+    axi_clock_converter_s_axi_control s_axi_control_clock_convert (
         .s_axi_aclk(ap_clk),
         .s_axi_aresetn(ap_rst_n),
-        .s_axi_awaddr(ocl_master_awaddr),
-        .s_axi_awprot(ocl_master_awprot),
-        .s_axi_awvalid(ocl_master_awvalid),
-        .s_axi_awready(ocl_master_awready),
-        .s_axi_wdata(ocl_master_wdata),
-        .s_axi_wstrb(ocl_master_wstrb),
-        .s_axi_wvalid(ocl_master_wvalid),
-        .s_axi_wready(ocl_master_wready),
-        .s_axi_bresp(ocl_master_bresp),
-        .s_axi_bvalid(ocl_master_bvalid),
-        .s_axi_bready(ocl_master_bready),
-        .s_axi_araddr(ocl_master_araddr),
-        .s_axi_arprot(ocl_master_arprot),
-        .s_axi_arvalid(ocl_master_arvalid),
-        .s_axi_arready(ocl_master_arready),
-        .s_axi_rdata(ocl_master_rdata),
-        .s_axi_rresp(ocl_master_rresp),
-        .s_axi_rvalid(ocl_master_rvalid),
-        .s_axi_rready(ocl_master_rready),
+        .s_axi_awaddr(s_axi_control_awaddr),
+        .s_axi_awprot(s_axi_control_awprot),
+        .s_axi_awvalid(s_axi_control_awvalid),
+        .s_axi_awready(s_axi_control_awready),
+        .s_axi_wdata(s_axi_control_wdata),
+        .s_axi_wstrb(s_axi_control_wstrb),
+        .s_axi_wvalid(s_axi_control_wvalid),
+        .s_axi_wready(s_axi_control_wready),
+        .s_axi_bresp(s_axi_control_bresp),
+        .s_axi_bvalid(s_axi_control_bvalid),
+        .s_axi_bready(s_axi_control_bready),
+        .s_axi_araddr(s_axi_control_araddr),
+        .s_axi_arprot(s_axi_control_arprot),
+        .s_axi_arvalid(s_axi_control_arvalid),
+        .s_axi_arready(s_axi_control_arready),
+        .s_axi_rdata(s_axi_control_rdata),
+        .s_axi_rresp(s_axi_control_rresp),
+        .s_axi_rvalid(s_axi_control_rvalid),
+        .s_axi_rready(s_axi_control_rready),
 
         .m_axi_aclk(ap_clk_2),
         .m_axi_aresetn(ap_rst_n_2),
-        .m_axi_awaddr(ocl_master_awaddr_sync),
-        .m_axi_awprot(ocl_master_awprot_sync),
-        .m_axi_awvalid(ocl_master_awvalid_sync),
-        .m_axi_awready(ocl_master_awready_sync),
-        .m_axi_wdata(ocl_master_wdata_sync),
-        .m_axi_wstrb(ocl_master_wstrb_sync),
-        .m_axi_wvalid(ocl_master_wvalid_sync),
-        .m_axi_wready(ocl_master_wready_sync),
-        .m_axi_bresp(ocl_master_bresp_sync),
-        .m_axi_bvalid(ocl_master_bvalid_sync),
-        .m_axi_bready(ocl_master_bready_sync),
-        .m_axi_araddr(ocl_master_araddr_sync),
-        .m_axi_arprot(ocl_master_arprot_sync),
-        .m_axi_arvalid(ocl_master_arvalid_sync),
-        .m_axi_arready(ocl_master_arready_sync),
-        .m_axi_rdata(ocl_master_rdata_sync),
-        .m_axi_rresp(ocl_master_rresp_sync),
-        .m_axi_rvalid(ocl_master_rvalid_sync),
-        .m_axi_rready(ocl_master_rready_sync)
+        .m_axi_awaddr(s_axi_control_awaddr_sync),
+        .m_axi_awprot(s_axi_control_awprot_sync),
+        .m_axi_awvalid(s_axi_control_awvalid_sync),
+        .m_axi_awready(s_axi_control_awready_sync),
+        .m_axi_wdata(s_axi_control_wdata_sync),
+        .m_axi_wstrb(s_axi_control_wstrb_sync),
+        .m_axi_wvalid(s_axi_control_wvalid_sync),
+        .m_axi_wready(s_axi_control_wready_sync),
+        .m_axi_bresp(s_axi_control_bresp_sync),
+        .m_axi_bvalid(s_axi_control_bvalid_sync),
+        .m_axi_bready(s_axi_control_bready_sync),
+        .m_axi_araddr(s_axi_control_araddr_sync),
+        .m_axi_arprot(s_axi_control_arprot_sync),
+        .m_axi_arvalid(s_axi_control_arvalid_sync),
+        .m_axi_arready(s_axi_control_arready_sync),
+        .m_axi_rdata(s_axi_control_rdata_sync),
+        .m_axi_rresp(s_axi_control_rresp_sync),
+        .m_axi_rvalid(s_axi_control_rvalid_sync),
+        .m_axi_rready(s_axi_control_rready_sync)
     );
 
     wire         pcie_dma_awready_sync;
@@ -993,51 +993,51 @@ module XRTShim (
     F1Shim f1Shim (
         .clock(ap_clk_2),
         .reset(!ap_rst_n_2),
-        .io_master_aw_ready(ocl_master_awready_sync),
-        .io_master_aw_valid(ocl_master_awvalid_sync),
-        .io_master_aw_bits_addr(ocl_master_awaddr_sync),
-        .io_master_aw_bits_len(ocl_master_awlen_sync),
-        .io_master_aw_bits_size(ocl_master_awsize_sync),
-        .io_master_aw_bits_burst(ocl_master_awburst_sync),
-        .io_master_aw_bits_lock(ocl_master_awlock_sync),
-        .io_master_aw_bits_cache(ocl_master_awcache_sync),
-        .io_master_aw_bits_prot(ocl_master_awprot_sync),
-        .io_master_aw_bits_qos(ocl_master_awqos_sync),
-        .io_master_aw_bits_region(ocl_master_awregion_sync),
-        .io_master_aw_bits_id(ocl_master_awid_sync),
-        .io_master_aw_bits_user(ocl_master_awuser_sync),
-        .io_master_w_ready(ocl_master_wready_sync),
-        .io_master_w_valid(ocl_master_wvalid_sync),
-        .io_master_w_bits_data(ocl_master_wdata_sync),
-        .io_master_w_bits_last(ocl_master_wlast_sync),
-        .io_master_w_bits_id(ocl_master_wid_sync),
-        .io_master_w_bits_strb(ocl_master_wstrb_sync),
-        .io_master_w_bits_user(ocl_master_wuser_sync),
-        .io_master_b_ready(ocl_master_bready_sync),
-        .io_master_b_valid(ocl_master_bvalid_sync),
-        .io_master_b_bits_resp(ocl_master_bresp_sync),
-        .io_master_b_bits_id(ocl_master_bid_sync),
-        .io_master_b_bits_user(ocl_master_buser_sync),
-        .io_master_ar_ready(ocl_master_arready_sync),
-        .io_master_ar_valid(ocl_master_arvalid_sync),
-        .io_master_ar_bits_addr(ocl_master_araddr_sync),
-        .io_master_ar_bits_len(ocl_master_arlen_sync),
-        .io_master_ar_bits_size(ocl_master_arsize_sync),
-        .io_master_ar_bits_burst(ocl_master_arburst_sync),
-        .io_master_ar_bits_lock(ocl_master_arlock_sync),
-        .io_master_ar_bits_cache(ocl_master_arcache_sync),
-        .io_master_ar_bits_prot(ocl_master_arprot_sync),
-        .io_master_ar_bits_qos(ocl_master_arqos_sync),
-        .io_master_ar_bits_region(ocl_master_arregion_sync),
-        .io_master_ar_bits_id(ocl_master_arid_sync),
-        .io_master_ar_bits_user(ocl_master_aruser_sync),
-        .io_master_r_ready(ocl_master_rready_sync),
-        .io_master_r_valid(ocl_master_rvalid_sync),
-        .io_master_r_bits_resp(ocl_master_rresp_sync),
-        .io_master_r_bits_data(ocl_master_rdata_sync),
-        .io_master_r_bits_last(ocl_master_rlast_sync),
-        .io_master_r_bits_id(ocl_master_rid_sync),
-        .io_master_r_bits_user(ocl_master_ruser_sync),
+        .io_master_aw_ready(s_axi_control_awready_sync),
+        .io_master_aw_valid(s_axi_control_awvalid_sync),
+        .io_master_aw_bits_addr(s_axi_control_awaddr_sync),
+        .io_master_aw_bits_len(s_axi_control_awlen_sync),
+        .io_master_aw_bits_size(s_axi_control_awsize_sync),
+        .io_master_aw_bits_burst(s_axi_control_awburst_sync),
+        .io_master_aw_bits_lock(s_axi_control_awlock_sync),
+        .io_master_aw_bits_cache(s_axi_control_awcache_sync),
+        .io_master_aw_bits_prot(s_axi_control_awprot_sync),
+        .io_master_aw_bits_qos(s_axi_control_awqos_sync),
+        .io_master_aw_bits_region(s_axi_control_awregion_sync),
+        .io_master_aw_bits_id(s_axi_control_awid_sync),
+        .io_master_aw_bits_user(s_axi_control_awuser_sync),
+        .io_master_w_ready(s_axi_control_wready_sync),
+        .io_master_w_valid(s_axi_control_wvalid_sync),
+        .io_master_w_bits_data(s_axi_control_wdata_sync),
+        .io_master_w_bits_last(s_axi_control_wlast_sync),
+        .io_master_w_bits_id(s_axi_control_wid_sync),
+        .io_master_w_bits_strb(s_axi_control_wstrb_sync),
+        .io_master_w_bits_user(s_axi_control_wuser_sync),
+        .io_master_b_ready(s_axi_control_bready_sync),
+        .io_master_b_valid(s_axi_control_bvalid_sync),
+        .io_master_b_bits_resp(s_axi_control_bresp_sync),
+        .io_master_b_bits_id(s_axi_control_bid_sync),
+        .io_master_b_bits_user(s_axi_control_buser_sync),
+        .io_master_ar_ready(s_axi_control_arready_sync),
+        .io_master_ar_valid(s_axi_control_arvalid_sync),
+        .io_master_ar_bits_addr(s_axi_control_araddr_sync),
+        .io_master_ar_bits_len(s_axi_control_arlen_sync),
+        .io_master_ar_bits_size(s_axi_control_arsize_sync),
+        .io_master_ar_bits_burst(s_axi_control_arburst_sync),
+        .io_master_ar_bits_lock(s_axi_control_arlock_sync),
+        .io_master_ar_bits_cache(s_axi_control_arcache_sync),
+        .io_master_ar_bits_prot(s_axi_control_arprot_sync),
+        .io_master_ar_bits_qos(s_axi_control_arqos_sync),
+        .io_master_ar_bits_region(s_axi_control_arregion_sync),
+        .io_master_ar_bits_id(s_axi_control_arid_sync),
+        .io_master_ar_bits_user(s_axi_control_aruser_sync),
+        .io_master_r_ready(s_axi_control_rready_sync),
+        .io_master_r_valid(s_axi_control_rvalid_sync),
+        .io_master_r_bits_resp(s_axi_control_rresp_sync),
+        .io_master_r_bits_data(s_axi_control_rdata_sync),
+        .io_master_r_bits_last(s_axi_control_rlast_sync),
+        .io_master_r_bits_id(s_axi_control_rid_sync),
+        .io_master_r_bits_user(s_axi_control_ruser_sync),
         .io_dma_aw_ready(pcie_dma_awready_sync),
         .io_dma_aw_valid(pcie_dma_awvalid_sync),
         .io_dma_aw_bits_addr(pcie_dma_awaddr_sync),
