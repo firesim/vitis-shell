@@ -7,10 +7,11 @@
 PROJECT_NAME := firesim
 
 .PHONY: help
-help:
-	$(ECHO) "Makefile Usage:"
-	$(ECHO) "  make xclbin DEVICE=<FPGA platform>"
-	$(ECHO) "      Command to HW package"
+
+help::
+	@echo "Makefile Usage:"
+	@echo "  make xclbin DEVICE=<FPGA platform>"
+	@echo "      Command to HW package"
 
 ifndef XILINX_VITIS
 	$(error XILINX_VITIS variable is not set, please set correctly and rerun)
@@ -39,6 +40,9 @@ build: $(BINARY_CONTAINER)
 xclbin: build
 
 # Building kernel (xclbin)
+VPP := $(XILINX_VITIS)/bin/v++
+VPP_FLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps
+
 $(BINARY_CONTAINER): $(BINARY_CONTAINER_OBJ)
 	mkdir -p $(BUILD_DIR)
 	$(VPP) $(VPP_FLAGS) -l $(VPP_LDFLAGS) --temp_dir $(TEMP_DIR) -o $(BUILD_DIR)/$(PROJECT_NAME).link.xclbin $+

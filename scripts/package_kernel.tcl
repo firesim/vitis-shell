@@ -18,51 +18,12 @@ set path_to_hdl "./vsrcs"
 set path_to_packaged "./packaged_kernel_${suffix}"
 set path_to_tmp_project "./tmp_kernel_pack_${suffix}"
 
-create_project -force kernel_pack $path_to_tmp_project
+set projPart "xcu250-figd2104-2L-e"
+
+create_project -force kernel_pack $path_to_tmp_project -part ${projPart}
 add_files -norecurse [glob $path_to_hdl/*.v $path_to_hdl/*.sv]
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
-ipx::package_project -root_dir $path_to_packaged -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
-ipx::unload_core $path_to_packaged/component.xml
-ipx::edit_ip_in_project -upgrade true -name tmp_edit_project -directory $path_to_packaged $path_to_packaged/component.xml
-
-set core [ipx::current_core]
-
-set_property core_revision 2 $core
-foreach up [ipx::get_user_parameters] {
-    ipx::remove_user_parameter [get_property NAME $up] $core
-}
-
-ipx::associate_bus_interfaces -busif ddr_0 -clock ap_clk $core
-ipx::associate_bus_interfaces -busif ddr_1 -clock ap_clk $core
-ipx::associate_bus_interfaces -busif ddr_2 -clock ap_clk $core
-ipx::associate_bus_interfaces -busif ddr_3 -clock ap_clk $core
-ipx::associate_bus_interfaces -busif s_axi_control -clock ap_clk $core
-ipx::associate_bus_interfaces -busif pcie_dma -clock ap_clk $core
-
-ipx::infer_bus_interface ap_clk_2 xilinx.com:signal:clock_rtl:1.0 $core
-ipx::infer_bus_interface ap_rst_n_2 xilinx.com:signal:reset_rtl:1.0 $core
-
-# Specify the freq_hz parameter
-set clkbif      [::ipx::get_bus_interfaces -of $core "ap_clk"]
-set clkbifparam [::ipx::add_bus_parameter -quiet "FREQ_HZ" $clkbif]
-# Set desired frequency
-set_property value 250000000 $clkbifparam
-# set value_resolve_type 'user' if the frequency can vary.
-#set_property value_resolve_type user $clkbifparam
-# set value_resolve_type 'immediate' if the frequency cannot change.
-set_property value_resolve_type immediate $clkbifparam
-
-# Specify the freq_hz parameter
-set clkbif      [::ipx::get_bus_interfaces -of $core "ap_clk_2"]
-set clkbifparam [::ipx::add_bus_parameter -quiet "FREQ_HZ" $clkbif]
-# Set desired frequency
-# TODO: Have FireSim TCL set this
-set_property value 250000000 $clkbifparam
-# set value_resolve_type 'user' if the frequency can vary.
-#set_property value_resolve_type user $clkbifparam
-# set value_resolve_type 'immediate' if the frequency cannot change.
-set_property value_resolve_type immediate $clkbifparam
 
 # Add FireSim IP
 create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_s_axi_control
@@ -100,6 +61,79 @@ set_property -dict [list \
     CONFIG.WUSER_WIDTH {0} \
     CONFIG.BUSER_WIDTH {0} \
 ] [get_ips axi_clock_converter_ddr]
+
+
+
+ipx::package_project -root_dir $path_to_packaged -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
+ipx::unload_core $path_to_packaged/component.xml
+ipx::edit_ip_in_project -upgrade true -name tmp_edit_project -directory $path_to_packaged $path_to_packaged/component.xml
+
+set core [ipx::current_core]
+
+set_property core_revision 2 $core
+foreach up [ipx::get_user_parameters] {
+    ipx::remove_user_parameter [get_property NAME $up] $core
+}
+
+ipx::associate_bus_interfaces -busif ddr_0 -clock ap_clk $core
+ipx::associate_bus_interfaces -busif ddr_1 -clock ap_clk $core
+ipx::associate_bus_interfaces -busif ddr_2 -clock ap_clk $core
+ipx::associate_bus_interfaces -busif ddr_3 -clock ap_clk $core
+ipx::associate_bus_interfaces -busif s_axi_control -clock ap_clk $core
+ipx::associate_bus_interfaces -busif pcie_dma -clock ap_clk $core
+
+ipx::infer_bus_interface ap_clk_2 xilinx.com:signal:clock_rtl:1.0 $core
+ipx::infer_bus_interface ap_rst_n_2 xilinx.com:signal:reset_rtl:1.0 $core
+
+# Specify the freq_hz parameter
+set clkbif      [::ipx::get_bus_interfaces -of $core "ap_clk"]
+set clkbifparam [::ipx::add_bus_parameter -quiet "FREQ_HZ" $clkbif]
+# Set desired frequency
+set_property value 300000000 $clkbifparam
+# set value_resolve_type 'user' if the frequency can vary.
+#set_property value_resolve_type user $clkbifparam
+# set value_resolve_type 'immediate' if the frequency cannot change.
+set_property value_resolve_type immediate $clkbifparam
+
+# Specify the freq_hz parameter
+set clkbif1      [::ipx::get_bus_interfaces -of $core "ap_clk_2"]
+set clkbifparam1 [::ipx::add_bus_parameter -quiet "FREQ_HZ" $clkbif1]
+# Set desired frequency
+# TODO: Have FireSim TCL set this
+set_property value 500000000 $clkbifparam1
+# set value_resolve_type 'user' if the frequency can vary.
+#set_property value_resolve_type user $clkbifparam1
+# set value_resolve_type 'immediate' if the frequency cannot change.
+set_property value_resolve_type immediate $clkbifparam1
+
+set mem_map    [::ipx::add_memory_map -quiet "s_axi_control" $core]
+set addr_block [::ipx::add_address_block -quiet "reg0" $mem_map]
+
+set reg      [::ipx::add_register -quiet "offset0" $addr_block]
+set_property address_offset 0x010 $reg
+set_property size           [expr {8*8}]   $reg
+set regparam [::ipx::add_register_parameter -quiet {ASSOCIATED_BUSIF} $reg]
+set_property value ddr_0 $regparam
+
+set reg      [::ipx::add_register -quiet "offset1" $addr_block]
+set_property address_offset 0x020 $reg
+set_property size           [expr {8*8}]   $reg
+set regparam [::ipx::add_register_parameter -quiet {ASSOCIATED_BUSIF} $reg]
+set_property value ddr_1 $regparam
+
+set reg      [::ipx::add_register -quiet "offset2" $addr_block]
+set_property address_offset 0x030 $reg
+set_property size           [expr {8*8}]   $reg
+set regparam [::ipx::add_register_parameter -quiet {ASSOCIATED_BUSIF} $reg]
+set_property value ddr_2 $regparam
+
+set reg      [::ipx::add_register -quiet "offset3" $addr_block]
+set_property address_offset 0x040 $reg
+set_property size           [expr {8*8}]   $reg
+set regparam [::ipx::add_register_parameter -quiet {ASSOCIATED_BUSIF} $reg]
+set_property value ddr_3 $regparam
+
+set_property slave_memory_map_ref "s_axi_control" [::ipx::get_bus_interfaces -of $core "s_axi_control"]
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} $core
 set_property sdx_kernel true $core
