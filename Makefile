@@ -29,6 +29,9 @@ XSA := $(call device2xsa, $(DEVICE))
 endif
 TEMP_DIR := ./_x.$(TARGET).$(XSA)
 BUILD_DIR := ./build_dir.$(TARGET).$(XSA)
+LOG_DIR := ./$(TARGET).$(XSA).logs
+REPORT_DIR := ./$(TARGET).$(XSA).reports
+MSG_RULES := ./msg.mrf
 
 BINARY_CONTAINER := $(BUILD_DIR)/$(PROJECT_NAME).xclbin
 BINARY_CONTAINER_OBJ := $(TEMP_DIR)/$(PROJECT_NAME).xo
@@ -45,12 +48,12 @@ VPP_FLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps
 
 $(BINARY_CONTAINER): $(BINARY_CONTAINER_OBJ)
 	mkdir -p $(BUILD_DIR)
-	$(VPP) $(VPP_FLAGS) -l $(VPP_LDFLAGS) --temp_dir $(TEMP_DIR) -o $(BUILD_DIR)/$(PROJECT_NAME).link.xclbin $+
-	$(VPP) -p $(BUILD_DIR)/$(PROJECT_NAME).link.xclbin -t $(TARGET) --platform $(DEVICE) --package.out_dir $(PACKAGE_OUT) -o $(BINARY_CONTAINER)
+	$(VPP) $(VPP_FLAGS) -l $(VPP_LDFLAGS) --temp_dir $(TEMP_DIR) -o $(BUILD_DIR)/$(PROJECT_NAME).link.xclbin --message-rules $(MSG_RULES) --log_dir $(LOG_DIR) --report_dir $(REPORT_DIR) $+
+	$(VPP) -p $(BUILD_DIR)/$(PROJECT_NAME).link.xclbin -t $(TARGET) --platform $(DEVICE) --package.out_dir $(PACKAGE_OUT) -o $(BINARY_CONTAINER) --message-rules $(MSG_RULES) --log_dir $(LOG_DIR) --report_dir $(REPORT_DIR)
 
 # Package and create xo
 VIVADO := $(XILINX_VIVADO)/bin/vivado
-$(BINARY_CONTAINER_OBJ): scripts/package_kernel.tcl scripts/gen_xo.tcl vsrcs/*.sv vsrcs/*.v
+$(BINARY_CONTAINER_OBJ): scripts/package_kernel.tcl scripts/gen_xo.tcl vsrcs/*.sv
 	mkdir -p $(TEMP_DIR)
 	$(VIVADO) -mode batch -source scripts/gen_xo.tcl -tclargs $@ $(PROJECT_NAME) $(TARGET) $(DEVICE) $(XSA)
 
@@ -62,6 +65,7 @@ clean:
 .PHONY: cleanall
 cleanall: clean
 	rm -rf build_dir* sd_card*
-	rm -rf package.*
+	rm -rf package.* .ipcache
 	rm -rf _x* *xclbin.run_summary qemu-memory-_* emulation _vimage pl* start_simulation.sh *.xclbin
 	rm -rf ./tmp_kernel_pack* ./packaged_kernel*
+	rm -rf *.logs *.reports
