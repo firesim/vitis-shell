@@ -204,9 +204,15 @@ module XRTShim (
     //    .io_master_r_bits_user(s_axi_lite_ruser_sync)
     //);
 
+    // register and invert reset signal for better timing
+    logic areset = 1'b0;
+    always @(posedge ap_clk) begin
+        areset <= ~ap_rst_n;
+    end
+
     VitisShim vitisShim (
         .clock(ap_clk),
-        .reset(ap_rst_n),
+        .reset(areset),
         .io_master_aw_ready(s_axi_lite_awready),
         .io_master_aw_valid(s_axi_lite_awvalid),
         .io_master_aw_bits_addr(s_axi_lite_awaddr),

@@ -17,7 +17,7 @@ ifndef XILINX_VITIS
 	$(error XILINX_VITIS variable is not set, please set correctly and rerun)
 endif
 
-TARGET := hw
+TARGET := hw_emu
 
 #   device2xsa - create a filesystem friendly name from device name
 #   $(1) - full name of device
@@ -37,14 +37,20 @@ BINARY_CONTAINER := $(BUILD_DIR)/$(PROJECT_NAME).xclbin
 BINARY_CONTAINER_OBJ := $(TEMP_DIR)/$(PROJECT_NAME).xo
 
 .PHONY: build
-build: $(BINARY_CONTAINER)
+build: $(BINARY_CONTAINER) emconfig
 
 .PHONY: xclbin
 xclbin: build
 
+emconfig: $(TEMP_DIR)/emconfig.json
+$(TEMP_DIR)/emconfig.json:
+	emconfigutil --platform $(DEVICE) --od $(TEMP_DIR)
+
+PACKAGE_OUT = ./package.$(TARGET)
+
 # Building kernel (xclbin)
 VPP := $(XILINX_VITIS)/bin/v++
-VPP_FLAGS += -t $(TARGET) --platform $(DEVICE) --save-temps
+VPP_FLAGS += -g -t $(TARGET) --platform $(DEVICE) --save-temps
 
 $(BINARY_CONTAINER): $(BINARY_CONTAINER_OBJ)
 	mkdir -p $(BUILD_DIR)
