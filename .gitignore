@@ -30,3 +30,4 @@ packaged_kernel*
 ip
 .ipcache/
 *.logs/
+*.reports/
