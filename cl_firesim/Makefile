@@ -108,7 +108,7 @@ sv_processed = design/FireSim-generated.post-processed.sv
 sv_defines   = design/defines.vh
 
 $(sv_processed): $(sv_generated)
-	@echo "\`include \"$(notdir $(sv_defines))\"" > $@
+	echo "\`include \"$(notdir $(sv_defines))\"" > $@
 	cat $< >> $@
 
 %.xo: scripts/package_kernel.tcl scripts/gen_xo.tcl $(sv_processed) $(sv_defines)
