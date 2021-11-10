@@ -22,7 +22,6 @@ set projPart "xcu250-figd2104-2L-e"
 
 create_project -force kernel_pack $path_to_tmp_project -part ${projPart}
 add_files -norecurse [ list \
-    $path_to_hdl/XRTShim.v \
     $path_to_hdl/defines.vh \
     $path_to_hdl/FireSim-generated.post-processed.sv \
 ]
