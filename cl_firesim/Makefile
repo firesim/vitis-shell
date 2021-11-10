@@ -144,6 +144,7 @@ $(SIM_RUN_DIR)/emconfig.json:
 # fresh location that can be cleanly removed.
 delivered_sim_inputs = $(addprefix $(SIM_RUN_DIR)/, $(driver_bin) $(runtime_conf))
 $(SIM_RUN_DIR)/%: $(DRIVER_DIR)/%
+	mkdir -p $(@D)
 	cp -f $< $@
 
 # Vitis Hardware Emulation provides three debugging modes
@@ -155,11 +156,12 @@ DEBUG_MODE ?= batch
 .PHONY: run-sim
 run-sim: $(SIM_BINARY_CONTAINER) $(delivered_sim_inputs) $(emconfig)
 	mkdir -p $(SIM_RUN_DIR)
-	@echo "[Emulation]"               $(SIM_RUN_DIR) > xrt.ini
-	@echo "debug_mode=$(DEBUG_MODE)"  $(SIM_RUN_DIR) >> xrt.ini # wave dump at end
+	@echo "[Emulation]"                                            >  $(SIM_RUN_DIR)/xrt.ini
+	@echo "user_pre_sim_script=../../scripts/xsim-setup-waves.tcl" >> $(SIM_RUN_DIR)/xrt.ini
+	@echo "debug_mode=$(DEBUG_MODE)"                               >> $(SIM_RUN_DIR)/xrt.ini # wave dump at end
 	cd $(SIM_RUN_DIR) && XCL_EMULATION_MODE=hw_emu ./$(driver_bin) \
     +permissive \
-		$(shell "cat $(runtime_conf)") \
+		$(shell cat $(runtime_conf)) \
         +fesvr-step-size=128 \
         +device_index=0 \
         +binary_file=$(SIM_BINARY_CONTAINER) \
