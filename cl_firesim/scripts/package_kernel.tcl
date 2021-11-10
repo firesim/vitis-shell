@@ -30,19 +30,19 @@ add_files -norecurse [ list \
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
 
-# TODO: Re-add
-## Add FireSim IP
-#create_ip -name axi_clock_converter -vendor xilinx.com -library ip -version 2.1 -module_name axi_clock_converter_s_axi_lite
-#set_property -dict [list \
-#    CONFIG.ADDR_WIDTH {25} \
-#    CONFIG.DATA_WIDTH {32} \
-#    CONFIG.ID_WIDTH {12} \
-#    CONFIG.AWUSER_WIDTH {1} \
-#    CONFIG.ARUSER_WIDTH {1} \
-#    CONFIG.RUSER_WIDTH {1} \
-#    CONFIG.WUSER_WIDTH {1} \
-#    CONFIG.BUSER_WIDTH {1} \
-#] [get_ips axi_clock_converter_s_axi_lite]
+file mkdir ./ipgen
+set ipgen_scripts [glob $path_to_hdl/FireSim-generated.*.ipgen.tcl]
+foreach script $ipgen_scripts {
+    source $script
+}
+
+# Use RTL models instead of systemC-based ones for Xilinx IP.
+# - The AXI clock converter IP does not appear to function correctly when running on
+#   millennium, which leads to lost transactions. and the RTL models are easier to debug
+# - The RTL models are easier to read and debug
+set_property SELECTED_SIM_MODEL rtl [get_ips]
+
+generate_target all [get_ips]
 
 ipx::package_project -root_dir $path_to_packaged -vendor xilinx.com -library RTLKernel -taxonomy /KernelIP -import_files -set_current false
 ipx::unload_core $path_to_packaged/component.xml

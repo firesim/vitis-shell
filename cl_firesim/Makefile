@@ -111,7 +111,9 @@ $(sv_processed): $(sv_generated)
 	echo "\`include \"$(notdir $(sv_defines))\"" > $@
 	cat $< >> $@
 
-%.xo: scripts/package_kernel.tcl scripts/gen_xo.tcl $(sv_processed) $(sv_defines)
+ipgen_scripts = $(shell find design/ -iname "*.ipgen.tcl")
+
+%.xo: scripts/package_kernel.tcl scripts/gen_xo.tcl $(sv_processed) $(sv_defines) $(ipgen_scripts)
 	mkdir -p $(@D)
 	# Move into the simulation or bitstream-build directory
 	cd $(@D)/..; $(VIVADO) -mode batch -source $(buildroot)/scripts/gen_xo.tcl -tclargs $@ $(PROJECT_NAME) $(TARGET) $(DEVICE) $(XSA)
