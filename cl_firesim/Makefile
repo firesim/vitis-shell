@@ -163,7 +163,7 @@ run-sim: $(SIM_BINARY_CONTAINER) $(delivered_sim_inputs) $(emconfig)
 	@echo "debug_mode=$(DEBUG_MODE)"                               >> $(SIM_RUN_DIR)/xrt.ini # wave dump at end
 	cd $(SIM_RUN_DIR) && XCL_EMULATION_MODE=hw_emu ./$(driver_bin) \
     +permissive \
-		$(shell cat $(runtime_conf)) \
+		$(shell cat $(SIM_RUN_DIR)/$(runtime_conf)) \
         +fesvr-step-size=128 \
         +device_index=0 \
         +binary_file=$(SIM_BINARY_CONTAINER) \
