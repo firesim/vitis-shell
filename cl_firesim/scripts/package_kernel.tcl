@@ -55,6 +55,7 @@ foreach up [ipx::get_user_parameters] {
 }
 
 ipx::associate_bus_interfaces -busif s_axi_lite -clock ap_clk $core
+ipx::associate_bus_interfaces -busif host_mem_0 -clock ap_clk $core
 
 # TODO: Re-add
 #ipx::infer_bus_interface ap_clk_2 xilinx.com:signal:clock_rtl:1.0 $core
@@ -87,11 +88,18 @@ ipx::associate_bus_interfaces -busif s_axi_lite -clock ap_clk $core
 set mem_map    [::ipx::add_memory_map -quiet "s_axi_lite" $core]
 set addr_block [::ipx::add_address_block -quiet "reg0" $mem_map]
 
-set reg      [::ipx::add_register -quiet "offset0" $addr_block]
-set_property address_offset 0x010 $reg
-set_property size           [expr {8*8}]   $reg
+set host_mem_0_offset      [::ipx::add_register -quiet "host_mem_0_offset" $addr_block]
+set_property address_offset 0x010 $host_mem_0_offset
+set_property size           64    $host_mem_0_offset
 
 set_property slave_memory_map_ref "s_axi_lite" [::ipx::get_bus_interfaces -of $core "s_axi_lite"]
+
+# define association between pointer arguments (SRC_ADDR, DEST_ADDR) and axi masters (axi_rmst, axi_wmst)
+ipx::add_register_parameter ASSOCIATED_BUSIF $host_mem_0_offset
+set_property value {host_mem_0} [::ipx::get_register_parameters -of_objects $host_mem_0_offset ASSOCIATED_BUSIF]
+
+ipx::add_bus_parameter DATA_WIDTH [ipx::get_bus_interfaces host_mem_0 -of_objects [ipx::current_core]]
+set_property value          {64}  [ipx::get_bus_parameters DATA_WIDTH -of_objects [ipx::get_bus_interfaces host_mem_0 -of_objects [ipx::current_core]]]
 
 set_property xpm_libraries {XPM_CDC XPM_MEMORY XPM_FIFO} $core
 set_property sdx_kernel true $core

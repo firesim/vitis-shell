@@ -122,7 +122,9 @@ ipgen_scripts = $(shell find design/ -iname "*.ipgen.tcl")
 %/$(PROJECT_NAME).link.xclbin: %/$(PROJECT_NAME).xo
 	mkdir -p $(@D)
 	# Move into temp directory to avoid polluting top-level workdir
-	cd $(@D)/..; $(VPP) $(VPP_TARGET_SPECIFIC_ARGS) $(VPP_COMMON_ARGS) --link $(VPP_LDFLAGS) -o $@ $<
+	cd $(@D)/..; $(VPP) $(VPP_TARGET_SPECIFIC_ARGS) $(VPP_COMMON_ARGS) \
+	--connectivity.sp $(PROJECT_NAME)_1.host_mem_0:DDR[0] \
+	--link $(VPP_LDFLAGS) -o $@ $<
 
 %/$(BUILD_SUBDIR)/$(PROJECT_NAME).xclbin: %/$(TEMP_SUBDIR)/$(PROJECT_NAME).link.xclbin
 	mkdir -p $(@D)
