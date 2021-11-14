@@ -1,5 +1,8 @@
 .*.swp
 .*.swo
+
+cl_FireSim*
+
 profile_*
 TempConfig
 system_estimate.xtxt
