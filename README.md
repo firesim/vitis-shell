@@ -1,3 +1,18 @@
+
+Running make replace-rtl PLATFORM=vitis from firesim will copy cl_firesim into a secondary directory
+and populate it with the necessary sources. We'll call this subdirectory, WORKDIR.
+
+# Bitstream Builds
+
+`make bitstream` to build an XCLBIN that can be deployed to a U250. Bitstream builds run under the $WORDIR/bitstream
+
+# FPGA-level Metasimulation
+
+`make sim` to build a XCLBIN that can be deployed as an FPGA\_level metasimulator (hardware emulation in Vitis parlance). Most generated
+files are found under $WORKDIR/simulation.
+
+`make run-sim` to run metasimulation using rv64ui-p-simple. The simulator is launched under $WORKDIR/simulation/*.run/
+
 # Debugging Failing Vitis Builds
 
 The vitis compiler (v++) can be fairly opaque due to multiple layers of TCL
@@ -13,7 +28,7 @@ A typical v++ linking log may appear as follows:
 [12:54:58] Run vpl: Step config_hw_runs: Started
 [12:56:01] Run vpl: Step config_hw_runs: Completed
 [12:56:01] Run vpl: Step synth: Started
-[12:56:32] Block-level synthesis in progress, 0 of 15 jobs complete, 15 job running.
+[12:56:32] Block-level synthesis in progress, 0 of 250 jobs complete, 1 job running.
 ...
 [13:08:05] Top-level synthesis in progress.
 ...
@@ -25,7 +40,7 @@ Xilinx gives an overview of the generated directory structure
 but does not describe the files themselves. Intermediate outputs are stored at
 location specified by v++'s --temp_dir command-line argument. We'll call this `$TEMP`.
 
-# Linking
+## Linking
 Most of the interesting work for Linking is done under $TEMP/link/vivado/vpl,
 with a generated Vivado project found under `prj/`.  If you're familiar with a
 project-based Vivado flow, you'll know roughly where to look for things.
@@ -44,10 +59,12 @@ prj/ -- root of generated vivado project
 
 
 This project can be re-opened interactively using
-$BUILD/vivado/vpl/prj
+cd $BUILD/vivado/vpl/
+vivado -source openprj.tcl
 
+# For Abe
 
+- I put one built bitstream under /scratch/biancolin/xclbins. You should be able to rebuild the default driver
+  by typing `make vitis` under sim/.
+- Scripts to reflash FPGAs second stage shells and reset can be found under scripts/
 
-Logs for block-level synthesis live:
-$BUILD/vivado/vpl
-T
