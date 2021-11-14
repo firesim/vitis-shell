@@ -24,6 +24,7 @@ create_project -force kernel_pack $path_to_tmp_project -part ${projPart}
 add_files -norecurse [ list \
     $path_to_hdl/defines.vh \
     $path_to_hdl/FireSim-generated.post-processed.sv \
+    $path_to_hdl/constraints.xdc \
 ]
 
 update_compile_order -fileset sources_1
