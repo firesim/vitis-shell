@@ -28,7 +28,7 @@ SIM_DIR        := $(buildroot)/simulation
 bitstream: TARGET = hw
 bitstream: VPP_TARGET_SPECIFIC_ARGS = --target $(TARGET) --config $(buildroot)/build-bitstream.cfg
 sim:       TARGET = hw_emu
-sim:       VPP_TARGET_SPECIFIC_ARGS = --target $(TARGET) --config $(buildroot)/simulation.cfg 
+sim:       VPP_TARGET_SPECIFIC_ARGS = --target $(TARGET) --config $(buildroot)/simulation.cfg
 run-sim:   TARGET = hw_emu
 run-sim:   VPP_TARGET_SPECIFIC_ARGS = --target $(TARGET) --config $(buildroot)/simulation.cfg
 
@@ -59,6 +59,7 @@ SIM_BUILD_DIR  := $(SIM_DIR)/$(BUILD_SUBDIR)
 SIM_LOG_DIR    := $(SIM_DIR)/$(LOG_SUBDIR)
 SIM_REPORT_DIR := $(SIM_DIR)/$(REPORT_SUBDIR)
 SIM_RUN_DIR    := $(SIM_DIR)/$(XSA).run
+SIM_FPGARUN_DIR := $(SIM_DIR)/$(XSA).fpgarun
 
 BINARY_CONTAINER          = $(BUILD_DIR)/$(PROJECT_NAME).xclbin
 BINARY_CONTAINER_OBJ      = $(TEMP_DIR)/$(PROJECT_NAME).xo
@@ -149,11 +150,22 @@ $(SIM_RUN_DIR)/%: $(DRIVER_DIR)/%
 	mkdir -p $(@D)
 	cp -f $< $@
 
+# TODO: Remove later
+# Populate the fpga run directory. Vitis wants certain files to reside in the same
+# directory as the application binary, keep things seperated by building up a
+# fresh location that can be cleanly removed.
+delivered_fpga_inputs = $(addprefix $(SIM_FPGARUN_DIR)/, $(driver_bin) $(runtime_conf))
+$(SIM_FPGARUN_DIR)/%: $(DRIVER_DIR)/%
+	mkdir -p $(@D)
+	cp -f $< $@
+
 # Vitis Hardware Emulation provides three debugging modes
 # batch = waves dumped at the end of simulation
 # gui   = interactive session, with a GUI launched at time 0
 # none  = no waves
 DEBUG_MODE ?= batch
+
+BINARY ?= $(RISCV)/riscv64-unknown-elf/share/riscv-tests/isa/rv64ui-p-simple
 
 .PHONY: run-sim
 run-sim: $(SIM_BINARY_CONTAINER) $(delivered_sim_inputs) $(emconfig)
@@ -168,8 +180,23 @@ run-sim: $(SIM_BINARY_CONTAINER) $(delivered_sim_inputs) $(emconfig)
         +device_index=0 \
         +binary_file=$(SIM_BINARY_CONTAINER) \
     +permissive-off \
-    +prog0=$(RISCV)/riscv64-unknown-elf/share/riscv-tests/isa/rv64ui-p-simple </dev/null
+    +prog0=$(BINARY) </dev/null
 
+# TODO: Remove this once working
+.PHONY: run-fpga
+run-fpga: $(delivered_fpga_inputs)
+	mkdir -p $(SIM_FPGARUN_DIR)
+	echo "Flashing dummy kernel + validating FPGA"
+	xbutil validate --device 0000:41:00.1 --run quick
+	cd $(SIM_FPGARUN_DIR) && ./$(driver_bin) \
+    +permissive \
+		$(shell cat $(SIM_FPGARUN_DIR)/$(runtime_conf)) \
+        +device_index=0 \
+        +binary_file=/scratch/biancolin/xclbins/rocket-fased.xclbin \
+        +blkdev0=/scratch/abejgonza/chipyard-work/chipyard/tests/br-base.img \
+        +blkdev-log0=blkdev-log0 \
+    +permissive-off \
+    +prog0=$(BINARY) </dev/null
 
 .PHONY: clean
 clean:
