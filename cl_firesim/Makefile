@@ -33,7 +33,7 @@ run-sim:   TARGET = hw_emu
 run-sim:   VPP_TARGET_SPECIFIC_ARGS = --target $(TARGET) --config $(buildroot)/simulation.cfg
 
 # current support on firesim1
-DEVICE ?= xilinx_u250_gen3x16_xdma_3_1_202020_1
+DEVICE ?= xilinx_u250_gen3x16_xdma_2_1_202010_1
 
 #   device2xsa - create a filesystem friendly name from device name
 #   $(1) - full name of device
