@@ -63,6 +63,7 @@ SIM_RUN_DIR    := $(SIM_DIR)/$(XSA).run
 BINARY_CONTAINER          = $(BUILD_DIR)/$(PROJECT_NAME).xclbin
 BINARY_CONTAINER_OBJ      = $(TEMP_DIR)/$(PROJECT_NAME).xo
 BINARY_CONTAINER_LINK_OBJ = $(TEMP_DIR)/$(PROJECT_NAME).link.xclbin
+ATTESTED_BINARY_CONTAINER = $(BUILD_DIR)/$(PROJECT_NAME).azure.xclbin
 
 SIM_BINARY_CONTAINER          = $(SIM_BUILD_DIR)/$(PROJECT_NAME).xclbin
 SIM_BINARY_CONTAINER_OBJ      = $(SIM_TEMP_DIR)/$(PROJECT_NAME).xo
@@ -170,6 +171,11 @@ run-sim: $(SIM_BINARY_CONTAINER) $(delivered_sim_inputs) $(emconfig)
     +permissive-off \
     +prog0=$(RISCV)/riscv64-unknown-elf/share/riscv-tests/isa/rv64ui-p-simple </dev/null
 
+.PHONY: azure-bitstream
+azure-bitstream: $(ATTESTED_BINARY_CONTAINER)
+
+$(ATTESTED_BINARY_CONTAINER): $(BINARY_CONTAINER)
+	./scripts/azure-attestation.sh $< $@
 
 .PHONY: clean
 clean:
