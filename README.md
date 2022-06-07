@@ -19,6 +19,8 @@ The vitis compiler (v++) can be fairly opaque due to multiple layers of TCL
 wrapping which abstract the underlying calls to Vivado.
 
 A typical v++ linking log may appear as follows:
+
+```
 [12:50:32] Run vpl: Step create_bd: Started
 [12:51:15] Run vpl: Step create_bd: Completed
 [12:51:15] Run vpl: Step update_bd: Started
@@ -34,6 +36,7 @@ A typical v++ linking log may appear as follows:
 ...
 [13:09:49] Run vpl: Step synth: Completed
 [13:09:49] Run vpl: Step impl: Started
+```
 
 Xilinx gives an overview of the generated directory structure
 [here](https://www.xilinx.com/html_docs/xilinx2021_1/vitis_doc/output_dir.html),
